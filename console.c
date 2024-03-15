@@ -202,6 +202,22 @@ char change_number(char num)
     }
     return new_num;
 }
+void shift_buf(int i )
+{
+  for (int j = i  ; j < input.e-1;j++)
+  {
+    input.buf[j]= input.buf[j+1];
+  }
+  input.e--;
+}
+char to_upper(char a)
+{
+  return 'A' + (a - 'a');
+}
+char to_lower(char a)
+{
+  return 'a' + (a - 'A');
+}
 void
 consoleintr(int (*getc)(void))
 {
@@ -234,6 +250,19 @@ consoleintr(int (*getc)(void))
       if (input.buf[i]>='0' && input.buf[i]<='9')
       {
         input.buf[i] = change_number(input.buf[i]);
+      }
+      else if(input.buf[i]>='a' && input.buf[i]<= 'z')
+      {
+        input.buf[i]=to_upper(input.buf[i]);
+      }
+      else if (input.buf[i]>='A' && input.buf[i]<= 'Z')
+      {
+        input.buf[i]=to_lower(input.buf[i]);
+      }
+      else
+      {
+        shift_buf(i);
+        i--;
       }
       consputc(BACKSPACE);
     }
