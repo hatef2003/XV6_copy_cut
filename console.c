@@ -193,6 +193,15 @@ int max(int a , int b)
 {
   return a>b? a:b;
 }
+char change_number(char num)
+{
+    char new_num = num+ K;
+    if (new_num>'9')
+    {
+      new_num = ('A'-1) + (new_num-'9');
+    }
+    return new_num;
+}
 void
 consoleintr(int (*getc)(void))
 {
@@ -218,6 +227,23 @@ consoleintr(int (*getc)(void))
         consputc(BACKSPACE);
       }
       break;
+    case C('E'):
+    int i = input.w;
+    for( ; i < input.e; i++)
+    {
+      if (input.buf[i]>='0' && input.buf[i]<='9')
+      {
+        input.buf[i] = change_number(input.buf[i]);
+      }
+      consputc(BACKSPACE);
+    }
+    i = input.w;
+    for( ;i < input.e; i++)
+    {
+      
+      consputc(input.buf[i]);
+    }
+    break;
     case 'C':
       int first_pos = max(input.w , input.e - K); 
       memset(copy_buf,0,K);
