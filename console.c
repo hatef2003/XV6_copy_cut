@@ -14,9 +14,11 @@
 #include "mmu.h"
 #include "proc.h"
 #include "x86.h"
-
+#define K 4
 static void consputc(int);
 
+char copy_buf[K];
+int last_size;
 static int panicked = 0;
 
 static struct {
@@ -187,7 +189,10 @@ struct {
 } input;
 
 #define C(x)  ((x)-'@')  // Control-x
-
+int max(int a , int b)
+{
+  return a>b? a:b;
+}
 void
 consoleintr(int (*getc)(void))
 {
@@ -213,6 +218,38 @@ consoleintr(int (*getc)(void))
         consputc(BACKSPACE);
       }
       break;
+    case 'C':
+      int first_pos = max(input.w , input.e - K); 
+      memset(copy_buf,0,K);
+      
+      for (int i = first_pos; i < input.e; i++)
+      {
+        copy_buf[i-first_pos]= input.buf[i%INPUT_BUF];
+      }
+      last_size = input.e-first_pos;
+      break ; 
+    case 'V':
+      for(int i = 0 ; i < last_size ; i ++ )
+      {
+        input.buf[input.e++ % INPUT_BUF]= copy_buf[i];
+        consputc(copy_buf[i]);
+      }
+    break;
+    case 'X':
+      int first_pos2 = max(input.w , input.e - K); 
+      memset(copy_buf,0,K);
+      
+      for (int i = first_pos2; i < input.e; i++)
+      {
+        copy_buf[i-first_pos2]= input.buf[i%INPUT_BUF];
+      }
+      last_size = input.e-first_pos2;
+      while(input.e>first_pos2)
+      {
+        input.e--;
+        consputc(BACKSPACE);
+      }
+    break;
     default:
       if(c != 0 && input.e-input.r < INPUT_BUF){
         c = (c == '\r') ? '\n' : c;
